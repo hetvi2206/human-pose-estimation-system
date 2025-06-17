@@ -36,7 +36,7 @@ def pose_estimation_video(video_path):
     cap = cv2.VideoCapture(video_path)
     stframe = st.empty()
 
-    with mp_pose.Pose(static_image_mode=False, model_complexity=0, min_detection_confidence=0.5) as pose:
+    with mp_pose.Pose(static_image_mode=False, model_complexity=1, min_detection_confidence=0.5) as pose:
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
