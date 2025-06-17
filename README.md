@@ -16,7 +16,7 @@ This project is a **Human Pose Estimation System** built using **MediaPipe**, **
 
 ## Demo Output 📺
 
-![Human Pose Estimation Demo Output Video](assets/demo.mp4)
+![Human Pose Estimation Demo Output Video](assets/demo.gif)
 
 ![Human Pose Estimation Demo Output Video](assets/demo.png)
 
