@@ -14,7 +14,7 @@ mp_drawing = mp.solutions.drawing_utils
 
 
 def pose_estimation_image(image):
-    with mp_pose.Pose(static_image_mode=False, model_complexity=1, min_detection_confidence=0.5) as pose:
+    with mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.5) as pose:
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = pose.process(image_rgb)
 
