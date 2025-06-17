@@ -1,3 +1,6 @@
+import os
+os.environ["MEDIAPIPE_CACHE_FILE_PATH"] = "/tmp"
+
 import streamlit as st
 import cv2
 import mediapipe as mp
