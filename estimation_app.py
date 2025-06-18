@@ -5,19 +5,20 @@ import numpy as np
 import tflite_runtime.interpreter as tflite
 import os
 
-# Initialize drawing utils
-mp_drawing = mp.solutions.drawing_utils
-
 # Local model path
 LOCAL_MODEL_PATH = "models/pose_landmark_lite.tflite"
 
-# Function for pose estimation on images
+# Function to load TFLite model
+def load_interpreter():
+    interpreter = tflite.Interpreter(model_path=LOCAL_MODEL_PATH)
+    interpreter.allocate_tensors()
+    return interpreter
+
+# Pose estimation on images
 def pose_estimation_image(image_path):
     interpreter = load_interpreter()
-
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-
     input_shape = input_details[0]['shape']
     input_height, input_width = input_shape[1], input_shape[2]
 
@@ -29,7 +30,6 @@ def pose_estimation_image(image_path):
     interpreter.set_tensor(input_details[0]['index'], input_data)
     interpreter.invoke()
 
-    # Get landmark predictions
     landmarks = interpreter.get_tensor(output_details[0]['index'])
 
     h, w, _ = image_bgr.shape
@@ -38,22 +38,13 @@ def pose_estimation_image(image_path):
         y = int(lm[1] * h)
         cv2.circle(image_bgr, (x, y), 5, (0, 255, 0), -1)
 
-    st.image(cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB), channels="RGB")
+    return image_bgr
 
-
-
-# Function for pose estimation on videos
-def load_interpreter():
-    interpreter = tflite.Interpreter(model_path="models/pose_landmark_lite.tflite")
-    interpreter.allocate_tensors()
-    return interpreter
-
+# Pose estimation on videos
 def pose_estimation_video(video_path):
     interpreter = load_interpreter()
-
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-
     input_shape = input_details[0]['shape']
     input_height, input_width = input_shape[1], input_shape[2]
 
@@ -72,10 +63,8 @@ def pose_estimation_video(video_path):
         interpreter.set_tensor(input_details[0]['index'], input_data)
         interpreter.invoke()
 
-        # Get landmark predictions
         landmarks = interpreter.get_tensor(output_details[0]['index'])
 
-        # Draw detected keypoints on original frame
         h, w, _ = frame.shape
         for lm in landmarks[0]:
             x = int(lm[0] * w)
@@ -87,57 +76,30 @@ def pose_estimation_video(video_path):
     cap.release()
 
 # Streamlit UI
-st.title("Human Pose Estimation System (TFLite)")
-
-option = st.sidebar.selectbox("Choose an option", ["Video Pose Estimation"])
-
-if option == "Video Pose Estimation":
-    video_file_buffer = st.file_uploader("Upload a video (MP4, AVI, MOV)", type=["mp4", "avi", "mov"])
-    if video_file_buffer is not None:
-        tfile = tempfile.NamedTemporaryFile(delete=False)
-        tfile.write(video_file_buffer.read())
-        st.video(tfile.name)
-
-        if st.button("Start Pose Estimation"):
-            pose_estimation_video(tfile.name)
-            
-
-# Streamlit UI
-st.title("📌 Human Pose Estimation App")
-st.write("Upload an image or a video to detect human pose landmarks using MediaPipe.")
+st.title("📌 Human Pose Estimation System (TFLite)")
+st.write("Upload an image or a video to detect human pose landmarks.")
 
 option = st.sidebar.selectbox("Select Mode", ("Image Pose Estimation", "Video Pose Estimation"))
 
 if option == "Image Pose Estimation":
     image_file = st.file_uploader("Upload an Image (JPG/PNG)", type=["jpg", "jpeg", "png"])
-
     if image_file is not None:
-        file_bytes = np.asarray(bytearray(image_file.read()), dtype=np.uint8)
-        image = cv2.imdecode(file_bytes, 1)
-
-        st.image(image, channels="BGR", caption="Original Image")
-
-        annotated_image, results = pose_estimation_image(image)
-
-        if results:
-            st.success("Pose landmarks detected!")
-            st.image(annotated_image, channels="BGR", caption="Pose Estimation Result")
-        else:
-            st.warning("No landmarks detected.")
+        tfile = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
+        tfile.write(image_file.read())
+        annotated_image = pose_estimation_image(tfile.name)
+        st.image(cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB), channels="RGB", caption="Pose Estimation Result")
 
 elif option == "Video Pose Estimation":
     video_file = st.file_uploader("Upload a Video (MP4/AVI/MOV)", type=["mp4", "avi", "mov"])
-
     if video_file is not None:
         tfile = tempfile.NamedTemporaryFile(delete=False)
         tfile.write(video_file.read())
-
         st.video(tfile.name)
-
         if st.button("Start Pose Estimation"):
             pose_estimation_video(tfile.name)
 
 # Footer
 st.markdown("---")
-st.markdown("Made with ❤️ using MediaPipe, OpenCV and Streamlit")
+st.markdown("Made with ❤️ using TFLite, OpenCV and Streamlit")
+
 
