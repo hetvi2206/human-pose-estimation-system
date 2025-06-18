@@ -29,11 +29,25 @@ This project is a **Human Pose Estimation System** built using **MediaPipe**, **
 - Python 3.12 (recommended) 🐍
 - pip (Python package manager) 📦
 
-### Try it out 👇
+---
 
-[Link to app] 🌐
+## 📝 Setup Instructions  
 
-### Project Structure 📂
+### 📦 Install dependencies  
+
+```bash
+pip install -r requirements.txt
+```
+
+### ▶️ Run the app locally
+
+```bash
+streamlit run estimation_app.py
+```
+
+---
+
+## Project Structure 📂
 
 - `estimation_app.py` — Main Streamlit application file 🖥️
 - `pose_estimation_image.py` — Pose estimation logic for images (optional modular script) 🖼️
@@ -41,14 +55,18 @@ This project is a **Human Pose Estimation System** built using **MediaPipe**, **
 - `run.jpg`, `run1.mp4` — Sample media files (optional) 🏃‍♀️
 - `README.md` — This documentation file 📝
 
-### How It Works 🧠
+---
+
+## How It Works 🧠
 
 - Uses MediaPipe's Pose solution to detect 33 body landmarks per person. 📌
 - Processes the input (image, video, or webcam frames) with MediaPipe. ⚙️
 - Draws landmarks and connections on the image/video frames using OpenCV. 🎨
 - Displays the processed media with Streamlit's easy-to-use web interface. 💡
 
-### Technologies Used 🛠️
+---
+
+## Technologies Used 🛠️
 
 - MediaPipe — State-of-the-art pose detection. 🌟
 - OpenCV — Image and video processing. 📷
